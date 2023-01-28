@@ -29,7 +29,7 @@ class TestPublicUserAPI(TestCase):
 
         created_user = get_user_model().objects.get(email=payload["email"])
         self.assertEqual(payload["email"], created_user.email)
-        self.assertTrue(create_user.check_password(payload["password"]))
+        self.assertTrue(created_user.check_password(payload["password"]))
 
     def test_user_exits_error(self):
         payload = {

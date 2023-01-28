@@ -20,7 +20,7 @@ class AdminSiteTests(TestCase):
 
     def test_users_lists(self):
         """Test that users are listed on page."""
-        url = reverse("django:core_user_changelist")
+        url = reverse("admin:core_user_changelist")
         response = self.client.get(url)
 
         self.assertContains(response, self.user.name)
