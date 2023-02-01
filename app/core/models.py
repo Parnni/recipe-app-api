@@ -1,5 +1,6 @@
 "Custom user model."
 
+from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -36,3 +37,15 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     # Authentication field.
     USERNAME_FIELD = "email"
+
+
+class Recipe(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user_recipe")
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    time = models.IntegerField()
+    price = models.IntegerField()
+    link = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return self.title

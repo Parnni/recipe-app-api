@@ -21,4 +21,11 @@ class UserAdmin(BaseUserAdmin):
     readonly_fields = ["last_login"]
 
 
+class RecipeAdmin(admin.ModelAdmin):
+    list_display = ["title", "user", "time", "price"]
+    ordering = ["time", "price"]
+    search_fields = ["user", "title"]
+
+
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Recipe, RecipeAdmin)
