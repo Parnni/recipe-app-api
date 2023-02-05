@@ -14,3 +14,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """User specific."""
         return self.queryset.filter(user=self.request.user).order_by("-id")
+
+    def get_serializer_class(self):
+        if self.action != "list":
+            return serializers.RecipeDetailSerializer
+        return self.serializer_class
+
+    def perform_create(self, serializer):
+        """The will be validated first."""
+        serializer.save(user=self.request.user)
