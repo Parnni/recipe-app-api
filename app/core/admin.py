@@ -27,5 +27,11 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ["user", "title"]
 
 
+class TagAdmin(admin.ModelAdmin):
+    list_display = ["user", "name"]
+    ordering = ["user"]
+
+
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Recipe, RecipeAdmin)
+admin.site.register(models.Tag, TagAdmin)

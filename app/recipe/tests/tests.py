@@ -1,4 +1,4 @@
-from core.models import Recipe
+from core.models import Recipe, Tag
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 RECIPE_URL = reverse("recipe:recipe-list")
+TAG_URL = reverse("recipe:tag-list")
 
 
 def create_recipe(user):
@@ -74,3 +75,32 @@ class TestCreateRecipeAPI(TestCase):
         for field, value in payload.items():
             self.assertEqual(getattr(recipe, field), value)
         self.assertEqual(recipe.user, self.user)
+
+
+class TestPublicTag(TestCase):
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(**{"email": "test@email.com", "password": "testpassword"})
+
+    def test_create_tag(self):
+        payload = {"user": self.user, "name": "Testtag"}
+        resp = self.client.post(TAG_URL, payload)
+
+        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class TestPublicTag(TestCase):
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(**{"email": "test@email.com", "password": "testpassword"})
+        self.client.force_authenticate(user=self.user)
+
+    def test_create_tag(self):
+        payload = {"user": self.user, "name": "Testtag"}
+        resp = self.client.post(TAG_URL, payload)
+
+        tag = Tag.objects.get(id=resp.data["id"])
+
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(tag.user, payload["user"])
+        self.assertEqual(tag.name, payload["name"])

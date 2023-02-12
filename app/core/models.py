@@ -46,6 +46,15 @@ class Recipe(models.Model):
     time = models.IntegerField()
     price = models.IntegerField()
     link = models.CharField(max_length=255, blank=True)
+    tags = models.ManyToManyField("Tag")
 
     def __str__(self):
         return self.title
+
+
+class Tag(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tags")
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
