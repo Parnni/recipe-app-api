@@ -1,5 +1,8 @@
 "Custom user model."
 
+import os
+import uuid
+
 from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -7,6 +10,13 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.db import models
+
+
+def recipe_image_file_path(instance, filename):
+    """Generate file path for recipe image."""
+    file_extension = os.path.splitext(filename)[1]
+    filename = f"{uuid.uuid4()}{file_extension}"
+    return os.path.join("uploads", "recipe", filename)
 
 
 class UserManager(BaseUserManager):
@@ -40,7 +50,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Recipe(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user_recipe")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user_recipe"
+    )
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     time = models.IntegerField()
@@ -48,13 +60,16 @@ class Recipe(models.Model):
     link = models.CharField(max_length=255, blank=True)
     tags = models.ManyToManyField("Tag")
     ingredients = models.ManyToManyField("Ingredient")
+    image = models.ImageField(null=True, upload_to=recipe_image_file_path)
 
     def __str__(self):
         return self.title
 
 
 class Tag(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tags")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tags"
+    )
     name = models.CharField(max_length=255)
 
     def __str__(self):
@@ -62,7 +77,9 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="ingredients")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="ingredients"
+    )
     name = models.CharField(max_length=255)
 
     def __str__(self):
